@@ -3,6 +3,7 @@ import io.helins.linux.i2c.*;
 import java.util.logging.*;
 import java.io.IOException;
 import hegemone.sensors.DeviceTree;
+import hegemone.sensors.Sensors;
 import java.nio.ByteBuffer;
 
 class Main {
@@ -17,7 +18,10 @@ class Main {
 		//	var b2 = 1WireVerify();
 //		logger.info( "1-Wire Verify Check: " + b2 );
 
-
+		var sensors = new Sensors();
+		while(true) {
+			System.out.println(String.format("Temperature read: {%2.2f} deg. Celsius", sensors.getTemperature()));
+		}
 	}
 	
 	private static boolean I2CVerify() throws Exception {
