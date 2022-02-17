@@ -29,9 +29,11 @@ class Main {
 			logger.log(Level.INFO, "Bus can transact? {0}\nBus can read bytes? {1}", funcs);
 			logger.info("Test slave device 0x36 [Adafruit 4026]");
 			bus.selectSlave( DeviceTree.ADAFRUIT_SOIL_SENSOR );
+			/* TODO: refactor */
 			/* Native Memory buffer (!) */
 			I2CBuffer writeBuf = new I2CBuffer(2).set(0, 0)
 				.set(1, 4);
+			/* TODO: do we really have to write 2? */
 			logger.info("Writing 0x04 to i2c bus (2 bytes)");
 			bus.write(writeBuf);
 			logger.info("Write completed");
