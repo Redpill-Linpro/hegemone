@@ -10,6 +10,7 @@ class Sensors {
 	private static I2CBuffer writeBuf;
 	private static I2CBuffer readBuf;
 	private static I2CBus i2cbus;
+	private static final long I2C_WAIT = 400l;
 	static {
 		try {
 			writeBuf = new I2CBuffer(2);
@@ -28,7 +29,7 @@ class Sensors {
 			 /* avoid trashing the bus */
 			synchronized(this){
 				i2cbus.write(writeBuf);
-				suspend(400);
+				suspend(I2C_WAIT);
 			}
 			i2cbus.read(readBuf, 4);
 			byte[] b = {
