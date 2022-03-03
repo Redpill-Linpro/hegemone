@@ -13,17 +13,23 @@ class Main {
 		System.out.println("Hello world!");
 		/* Verify I2C */
 		var b1 = I2CVerify();
-		logger.log(Level.INFO, "I2C Verify Check: {0}",new Object[]{b1} );
+		logger.log(Level.INFO, "I2C Verify Check: {0}", new Object[]{b1} );
 		/* Verify 1-Wire */
-		//	var b2 = 1WireVerify();
-//		logger.info( "1-Wire Verify Check: " + b2 );
+		var b2 = OneWireVerify();
+		logger.info( "1-Wire Verify Check: " + b2 );
 
 		var sensors = new Sensors();
 		while(true) {
-			System.out.println(String.format("Temperature read: {%2.2f} deg. Celsius", sensors.getTemperature()));
+			//	System.out.println(String.format("Temperature read: {%2.2f} deg. Celsius", sensors.getSoilTemperature()));
+			//	System.out.println(String.format("1Wire: {%2.3fC}", sensors.getTemperature()));
+			System.out.println(String.format("Soil moisture: {%d}", sensors.getSoilMoisture()));
 		}
 	}
-	
+
+	private static boolean OneWireVerify() throws Exception {
+		//fix
+		return true;
+	}
 	private static boolean I2CVerify() throws Exception {
 		try (I2CBus bus = new I2CBus(DeviceTree.DEFAULT_I2C_BUS)) {
 			I2CFunctionalities functionalities = bus.getFunctionalities() ;
