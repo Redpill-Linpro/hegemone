@@ -22,6 +22,8 @@ class Soil {
 	private static final int MAX_RETRY = 4;
 	private static final byte MOISTURE_ADDR = 0x0F;
 	private static final byte MOISTURE_VAL = 0x10;
+	private static final byte TEMP_ADDR = 0x0;
+	private static final byte TEMP_VAL = 0x4;
 	static {
 		try {
 			twoBuf = new I2CBuffer(2);
@@ -45,8 +47,8 @@ class Soil {
 			return 0;
 		}
 		twoBuf.clear();
-		twoBuf.set(0,0x0)
-			.set(1,0x4);
+		twoBuf.set(0,TEMP_ADDR)
+			.set(1,TEMP_VAL);
 		try{ synchronized(this) {
 				i2cBus.write(twoBuf);
 				Utils.suspend(I2C_WAIT*2);
