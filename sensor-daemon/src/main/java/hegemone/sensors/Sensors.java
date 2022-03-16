@@ -4,6 +4,7 @@ import io.helins.linux.i2c.*;
 import java.util.logging.*;
 import java.io.IOException;
 import hegemone.sensors.DeviceTree;
+import hegemone.sensors.Soil;
 import java.nio.ByteBuffer;
 import java.io.File;
 import java.io.FileReader;
@@ -15,6 +16,7 @@ class Sensors {
 	private static I2CBuffer readBuf;
 	private static I2CBus i2cbus;
 	private static final long I2C_WAIT = 400l;
+	private Soil soilSensor;
 	static {
 		try {
 			writeBuf = new I2CBuffer(2);
@@ -24,6 +26,9 @@ class Sensors {
 			System.err.println("Failed to init i2c bus. Goodbye!");
 			System.exit(1);
 		}
+	}
+	public Sensors() {
+		soilSensor = new Soil(i2cbus);
 	}
 	public double getTemperature() throws IOException, FileNotFoundException {
 		double ret = 0;
@@ -51,79 +56,9 @@ class Sensors {
 	}
 
 	public int getSoilMoisture() {
-		int ret = 0;
-
-		try {
-			i2cbus.selectSlave(DeviceTree.ADAFRUIT_SOIL_SENSOR);
-			writeBuf.clear();
-			writeBuf.set(0,0x0F).set(1,0x10);
-			synchronized(this){
-				i2cbus.write(writeBuf);
-				suspend(I2C_WAIT);
-				suspend(I2C_WAIT);
-				System.out.println("Wrote msg");
-			}
-			synchronized(this){
-			readBuf.clear();
-			i2cbus.read(readBuf, 2);
-			System.out.println("Reading msg");
-			byte[] b = {
-				(byte)(readBuf.get(0)),
-				(byte)(readBuf.get(1))};
-			
-			ByteBuffer byteBuf = ByteBuffer.wrap(b);
-			System.out.print("Debug short ");
-			System.out.println(print(b));
-			ret = ((int)byteBuf.getShort());
-			}
-			//	System.out.println(byteBuf.getShort());
-			//int t = (int) byteBuf.getShort();
-		}
-		catch (Exception e){
-			System.err.println("Ooops");
-			System.err.println(e);
-			System.exit(1);
-		}
-		return ret;
+		return soilSensor.getMoisture();
 	}
 	public double getSoilTemperature(){
-		double ret = 0;
-		try {
-			i2cbus.selectSlave(DeviceTree.ADAFRUIT_SOIL_SENSOR);
-			writeBuf.set(0,0).set(1,4);
-			/* avoid trashing the bus */
-			synchronized(this){
-				i2cbus.write(writeBuf);
-				suspend(I2C_WAIT);
-			}
-			i2cbus.read(readBuf, 4);
-			byte[] b = {
-				(byte)(readBuf.get(0) & 0x3F), (byte)readBuf.get(1),
-				(byte)readBuf.get(2), (byte)readBuf.get(3)};
-			ByteBuffer byteBuf = ByteBuffer.wrap(b);
-			int t = byteBuf.getInt();
-			ret = DeviceTree.ADAFRUIT_SOIL_SENSOR_MAGIC * t;		
-		} catch (IOException ioe) {
-			System.err.println("Could not open i2c bus. Goodbye!");
-			System.exit(1);
-		}
-		return ret;
+		return soilSensor.getTemperature();
 	}
-	/* suspend x microseconds */
-	private static void suspend(long us) {
-		long t = System.nanoTime() + (us * 1000);
-		/* spin cpu */
-		while (t > System.nanoTime()){
-			;
-		}
-	}
-	public static String print(byte[] bytes) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("[ ");
-		for (byte b : bytes) {
-			sb.append(String.format("0x%02X ", b));
-		}
-		sb.append("]");
-		return sb.toString();
-	}	
 }
