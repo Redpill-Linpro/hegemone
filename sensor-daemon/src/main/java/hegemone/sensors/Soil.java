@@ -63,7 +63,7 @@ class Soil {
 		byte[] b = { (byte) (fourBuf.get(0) & 0x3F), (byte) fourBuf.get(1),
 			(byte)fourBuf.get(2), (byte)fourBuf.get(3)};
 		ByteBuffer byteBuf = ByteBuffer.wrap(b);
-		int t = byteBuf.getInt();
+		long t = (byteBuf.getInt() & 0xFFFFFFFFL);
 		ret = DeviceTree.ADAFRUIT_SOIL_SENSOR_MAGIC * t;
 		} catch (IOException ioe) {
 			System.err.println("Couldn't read temperature from soil sensor");
