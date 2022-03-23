@@ -49,7 +49,7 @@ class Soil {
 		twoBuf.clear();
 		twoBuf.set(0,TEMP_ADDR)
 			.set(1,TEMP_VAL);
-		try{ synchronized(this) {
+		try{ synchronized(i2cBus) {
 				i2cBus.write(twoBuf);
 				Utils.suspend(I2C_WAIT*2);
 			} twoBuf.clear();
@@ -86,7 +86,7 @@ class Soil {
 		
 
 		try {
-			synchronized(this) {
+			synchronized(i2cBus) {
 				i2cBus.write(twoBuf);
 				Utils.suspend(I2C_WAIT*2);
 			}
@@ -97,7 +97,7 @@ class Soil {
 		}
 		while(tries < MAX_RETRY) {
 			try {
-				synchronized(this) {
+				synchronized(i2cBus) {
 					i2cBus.read(twoBuf);
 					Utils.suspend(I2C_WAIT);
 					byte[] b = { (byte)(twoBuf.get(0)),

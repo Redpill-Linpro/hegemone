@@ -5,6 +5,7 @@ import java.util.logging.*;
 import java.io.IOException;
 import hegemone.sensors.DeviceTree;
 import hegemone.sensors.Soil;
+import hegemone.sensors.AmbientLight;
 import java.nio.ByteBuffer;
 import java.io.File;
 import java.io.FileReader;
@@ -17,6 +18,7 @@ class Sensors {
 	private static I2CBus i2cbus;
 	private static final long I2C_WAIT = 400l;
 	private Soil soilSensor;
+	private AmbientLight lightSensor;
 	static {
 		try {
 			writeBuf = new I2CBuffer(2);
@@ -29,6 +31,11 @@ class Sensors {
 	}
 	public Sensors() {
 		soilSensor = new Soil(i2cbus);
+		lightSensor = new AmbientLight(i2cbus);
+		lightSensor.configure();
+	}
+	public int getWhite() throws IOException {
+		return lightSensor.getWhiteLight();
 	}
 	public double getTemperature() throws IOException, FileNotFoundException {
 		double ret = 0;

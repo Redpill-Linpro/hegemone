@@ -27,15 +27,19 @@ class Main {
 		/* Verify data log */
 		var b3 = logVerify();
 		logger.log(Level.INFO, "Data Log Verify Check: {0}", new Object[]{b3});
-		var sensors = new Sensors();
-		var sm = sensors.getSoilMoisture();
-		var st = sensors.getSoilTemperature();
-		var at = sensors.getTemperature();
-		var data = String.format("Soil moisture: {%d}\tSoil temperature: {%2.2f}\nAir temperature: {%2.3fC}", sm, st, at);
-		System.out.println(data);
 		if (!(b1 && b2 && b3)) {
 			System.err.println("Errors were encountered during self test, refusing to proceed. Check error output.");
 			System.exit(1);
+		}
+		var sensors = new Sensors();
+		while(true) {
+			Utils.suspend(5000);
+			var sm = sensors.getSoilMoisture();
+			var st = sensors.getSoilTemperature();
+			var at = sensors.getTemperature();
+			var wd = sensors.getWhite();
+			var data = String.format("Soil moisture: {%d}\tSoil temperature: {%2.2f}\nAir temperature: {%2.3fC},\tWhite light: {%d}", sm, st, at, wd);
+			System.out.println(data);
 		}
 
 	}
@@ -62,7 +66,7 @@ class Main {
 		var log = new File("/var/log/hegemone-data.dmp");
 		try {
 			/* create iff not exists */
-		log.createNewFile();
+			log.createNewFile();
 		} catch (IOException e) {
 			System.err.println(e);
 			return false;
