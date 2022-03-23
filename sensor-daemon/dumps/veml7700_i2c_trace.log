@@ -1,0 +1,64 @@
+root@pizero:/home/billy# cat /sys/kernel/debug/tracing/trace
+# tracer: nop
+#
+# entries-in-buffer/entries-written: 52/52   #P:4
+#
+#                                _-----=> irqs-off
+#                               / _----=> need-resched
+#                              | / _---=> hardirq/softirq
+#                              || / _--=> preempt-depth
+#                              ||| /     delay
+#           TASK-PID     CPU#  ||||   TIMESTAMP  FUNCTION
+#              | |         |   ||||      |         |
+         python3-1246    [003] ....  2035.980799: i2c_write: i2c-1 #0 a=010 f=0000 l=0 []
+         python3-1246    [003] ....  2035.980955: i2c_result: i2c-1 n=1 ret=1
+         python3-1246    [003] ....  2035.981682: i2c_write: i2c-1 #0 a=010 f=0200 l=1 [00]
+         python3-1246    [003] ....  2035.981686: i2c_read: i2c-1 #1 a=010 f=0201 l=2
+         python3-1246    [003] ....  2035.982219: i2c_reply: i2c-1 #1 a=010 f=0201 l=2 [13-00]
+         python3-1246    [003] ....  2035.982222: i2c_result: i2c-1 n=2 ret=2
+         python3-1246    [003] ....  2035.982362: i2c_write: i2c-1 #0 a=010 f=0000 l=3 [00-12-00]
+         python3-1246    [003] ....  2035.982779: i2c_result: i2c-1 n=1 ret=1
+         python3-1246    [000] ....  2045.530995: i2c_write: i2c-1 #0 a=010 f=0200 l=1 [04]
+         python3-1246    [000] ....  2045.531002: i2c_read: i2c-1 #1 a=010 f=0201 l=2
+         python3-1246    [000] ....  2045.531531: i2c_reply: i2c-1 #1 a=010 f=0201 l=2 [6a-01]
+         python3-1246    [000] ....  2045.531535: i2c_result: i2c-1 n=2 ret=2
+         python3-1246    [000] ....  2050.561364: i2c_write: i2c-1 #0 a=010 f=0200 l=1 [04]
+         python3-1246    [000] ....  2050.561374: i2c_read: i2c-1 #1 a=010 f=0201 l=2
+         python3-1246    [000] ....  2050.562125: i2c_reply: i2c-1 #1 a=010 f=0201 l=2 [15-e6]
+         python3-1246    [000] ....  2050.562129: i2c_result: i2c-1 n=2 ret=2
+         python3-1246    [000] ....  2070.056579: i2c_write: i2c-1 #0 a=010 f=0200 l=1 [00]
+         python3-1246    [000] ....  2070.056587: i2c_read: i2c-1 #1 a=010 f=0201 l=2
+         python3-1246    [000] ....  2070.057121: i2c_reply: i2c-1 #1 a=010 f=0201 l=2 [12-00]
+         python3-1246    [000] ....  2070.057123: i2c_result: i2c-1 n=2 ret=2
+         python3-1246    [000] ....  2070.057315: i2c_write: i2c-1 #0 a=010 f=0000 l=3 [00-12-10]
+         python3-1246    [000] ....  2070.057730: i2c_result: i2c-1 n=1 ret=1
+         python3-1246    [000] ....  2073.770136: i2c_write: i2c-1 #0 a=010 f=0200 l=1 [04]
+         python3-1246    [000] ....  2073.770144: i2c_read: i2c-1 #1 a=010 f=0201 l=2
+         python3-1246    [000] ....  2073.770684: i2c_reply: i2c-1 #1 a=010 f=0201 l=2 [28-00]
+         python3-1246    [000] ....  2073.770687: i2c_result: i2c-1 n=2 ret=2
+         python3-1246    [000] ....  2081.282090: i2c_write: i2c-1 #0 a=010 f=0200 l=1 [04]
+         python3-1246    [000] ....  2081.282097: i2c_read: i2c-1 #1 a=010 f=0201 l=2
+         python3-1246    [000] ....  2081.282632: i2c_reply: i2c-1 #1 a=010 f=0201 l=2 [4d-72]
+         python3-1246    [000] ....  2081.282635: i2c_result: i2c-1 n=2 ret=2
+         python3-1246    [000] ....  2102.698648: i2c_write: i2c-1 #0 a=010 f=0200 l=1 [00]
+         python3-1246    [000] ....  2102.698658: i2c_read: i2c-1 #1 a=010 f=0201 l=2
+         python3-1246    [000] ....  2102.699516: i2c_reply: i2c-1 #1 a=010 f=0201 l=2 [12-10]
+         python3-1246    [000] ....  2102.699520: i2c_result: i2c-1 n=2 ret=2
+         python3-1246    [000] ....  2102.699784: i2c_write: i2c-1 #0 a=010 f=0000 l=3 [00-12-13]
+         python3-1246    [000] ....  2102.700451: i2c_result: i2c-1 n=1 ret=1
+         python3-1246    [000] ....  2106.243462: i2c_write: i2c-1 #0 a=010 f=0200 l=1 [04]
+         python3-1246    [000] ....  2106.243469: i2c_read: i2c-1 #1 a=010 f=0201 l=2
+         python3-1246    [003] ....  2106.244009: i2c_reply: i2c-1 #1 a=010 f=0201 l=2 [59-02]
+         python3-1246    [003] ....  2106.244012: i2c_result: i2c-1 n=2 ret=2
+         python3-1246    [003] ....  2108.940716: i2c_write: i2c-1 #0 a=010 f=0200 l=1 [04]
+         python3-1246    [003] ....  2108.940724: i2c_read: i2c-1 #1 a=010 f=0201 l=2
+         python3-1246    [000] ....  2108.941262: i2c_reply: i2c-1 #1 a=010 f=0201 l=2 [bb-2d]
+         python3-1246    [000] ....  2108.941267: i2c_result: i2c-1 n=2 ret=2
+         python3-1246    [002] ....  2110.593684: i2c_write: i2c-1 #0 a=010 f=0200 l=1 [04]
+         python3-1246    [002] ....  2110.593694: i2c_read: i2c-1 #1 a=010 f=0201 l=2
+         python3-1246    [002] ....  2110.594551: i2c_reply: i2c-1 #1 a=010 f=0201 l=2 [50-26]
+         python3-1246    [002] ....  2110.594556: i2c_result: i2c-1 n=2 ret=2
+         python3-1246    [002] ....  2111.887816: i2c_write: i2c-1 #0 a=010 f=0200 l=1 [04]
+         python3-1246    [002] ....  2111.887826: i2c_read: i2c-1 #1 a=010 f=0201 l=2
+         python3-1246    [002] ....  2111.888696: i2c_reply: i2c-1 #1 a=010 f=0201 l=2 [ee-2a]
+         python3-1246    [002] ....  2111.888700: i2c_result: i2c-1 n=2 ret=2
