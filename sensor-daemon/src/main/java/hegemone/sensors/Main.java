@@ -1,8 +1,8 @@
 package hegemone.sensors;
 
-import java.util.logging.*;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.File;
 
 import io.helins.linux.i2c.*;
@@ -13,20 +13,20 @@ import hegemone.sensors.Soil;
 
 
 class Main {
-	private static Logger logger = Logger.getLogger("hegemone.sensors.main");
+	private static Logger logger = LoggerFactory.getLogger("hegemone.sensors.main");
 	/* power-on self-test */
 	public static void main(String[] args) throws Exception{
 		System.out.println("Hegemone starting on " + System.getProperty("os.name") + " " + java.time.ZonedDateTime.now());
 		System.out.println("Self test");
 		/* Verify I2C */
 		var b1 = I2CVerify();
-		logger.log(Level.INFO, "I2C Verify Check: {0}", new Object[]{b1});
+		logger.info("I2C Verify Check: {}", b1);
 		/* Verify 1-Wire */
 		var b2 = OneWireVerify();
-		logger.log(Level.INFO, "1-Wire Verify Check: {0}", new Object[]{b2});
+		logger.info("1-Wire Verify Check: {}",b2);
 		/* Verify data log */
 		var b3 = logVerify();
-		logger.log(Level.INFO, "Data Log Verify Check: {0}", new Object[]{b3});
+		logger.info("Data Log Verify Check: {}", b3);
 		if (!(b1 && b2 && b3)) {
 			System.err.println("Errors were encountered during self test, refusing to proceed. Check error output.");
 			System.exit(1);
@@ -54,7 +54,7 @@ class Main {
 
 			var funcs = new Object[]{functionalities.can( I2CFunctionality.TRANSACTIONS ),
 				functionalities.can( I2CFunctionality.READ_BYTE )};
-			logger.log(Level.INFO, "I2C bus can transact? {0}\nI2C bus can read bytes? {1}", funcs);
+			logger.info("I2C bus can transact? {}\nI2C bus can read bytes? {}", funcs);
 			return (boolean) funcs[0] && (boolean) funcs[1];
 		} catch (IOException e) {
 			System.err.println(e);
