@@ -4,6 +4,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.File;
+import java.util.Arrays;
 
 import io.helins.linux.i2c.*;
 
@@ -38,8 +39,11 @@ class Main {
 			var st = sensors.getSoilTemperature();
 			var at = sensors.getTemperature();
 			var wd = sensors.getWhite();
+			int[] spectralData = sensors.getSpectralMeasurement();
 			var data = String.format("Soil moisture: {%d}\tSoil temperature: {%2.2f}\nAir temperature: {%2.3fC},\tWhite light: {%d}", sm, st, at, wd);
-			System.out.println(data);
+			var jsonData = String.format("{\"soil_moisture\": %d, \"soil_temperature\": %2.2f, \"air_temperature\": %2.3fC, \"white_light\": %d " +
+					"\"spectral\": %s}", sm, st, at, wd, Arrays.toString(spectralData));
+			System.out.println(jsonData);
 		}
 
 	}

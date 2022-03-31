@@ -19,6 +19,7 @@ class Sensors {
 	private static final long I2C_WAIT = 400l;
 	private Soil soilSensor;
 	private AmbientLight lightSensor;
+	private Spectrometer spectralSensor;
 	static {
 		try {
 			writeBuf = new I2CBuffer(2);
@@ -32,32 +33,37 @@ class Sensors {
 	public Sensors() {
 		soilSensor = new Soil(i2cbus);
 		lightSensor = new AmbientLight(i2cbus);
+		spectralSensor = new Spectrometer(i2cbus);
 		lightSensor.configure();
+		spectralSensor.configure();
 	}
 	public int getWhite() throws IOException {
 		return lightSensor.getWhiteLight();
 	}
 	public double getTemperature() throws IOException, FileNotFoundException {
 		double ret = 0;
-		var sensor = new File(DeviceTree.DEFAULT_W1_BUS, DeviceTree.DS18B20_SENSOR);
-		/* acquire */
-		try (BufferedReader bufreader = new BufferedReader(new FileReader(sensor)))
-		{
-			String s = bufreader.readLine();
-			int i = -1;
-			while  (s != null) {
-				i = s.indexOf("t=");
-				System.out.println(s);
-				System.out.println(i);
-				if(i >= 0) {
-					break;
+		try {
+			var sensor = new File(DeviceTree.DEFAULT_W1_BUS, DeviceTree.DS18B20_SENSOR);
+			/* acquire */
+			try (BufferedReader bufreader = new BufferedReader(new FileReader(sensor))) {
+				String s = bufreader.readLine();
+				int i = -1;
+				while (s != null) {
+					i = s.indexOf("t=");
+					System.out.println(s);
+					System.out.println(i);
+					if (i >= 0) {
+						break;
+					}
+					s = bufreader.readLine();
 				}
-				s = bufreader.readLine();
+				if (i < 0) {
+					throw new IOException("Could not read from sensor");
+				}
+				ret = Integer.parseInt(s.substring(i + 2)) / 1000f;
 			}
-			if (i < 0) {
-				throw new IOException("Could not read from sensor");
-			}
-			ret = Integer.parseInt(s.substring(i+2)) / 1000f;
+		} catch (FileNotFoundException e) {
+			System.err.println("Could not access DS18B20 temperature sensor.");
 		}
 		return ret;
 	}
@@ -67,5 +73,9 @@ class Sensors {
 	}
 	public double getSoilTemperature(){
 		return soilSensor.getTemperature();
+	}
+
+	public int[] getSpectralMeasurement() {
+		return spectralSensor.getPhotonFlux();
 	}
 }
