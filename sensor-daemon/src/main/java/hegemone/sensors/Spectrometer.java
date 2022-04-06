@@ -224,20 +224,72 @@ set to “1”.
     /* channels
     Every pixel ID can be mapped to GND[0], or ADC 0-5[1-6]
      * ch centr.   width   SMUX pixel id      RAM byte addr
-     * F1 415 nm   25 nm   2,32             0x01 [2:0], 0x10 [2:0]
-     * F2 445 nm   30 nm   10,25            0x05 [2:0], 0x0C [6:4]
-     * F3 480 nm   36 nm   1,31             0x00 [6:3], 0x0F [6:4]
-     * F4 515 nm   39 nm   11,26            0x05 [6:4], 0x0D [2:0]
-     * F5 555 nm   39 nm   13,19            0x06 [6:4], 0x09 [6:4]
-     * F6 590 nm   40 nm   8,29             0x04 [2:0], 0x0E [6:4]
-     * F7 630 nm   50 nm   14,20            0x07 [2:0], 0x0A [2:0]
-     * F8 680 nm   52 nm   7,28             0x03 [6:4], 0x0E [2:0]
-     * NIR 910 nm   n/a    38               0x13 [2:0]
-     * Clear non-filtered  17,35            0x08 [6:4], 0x11 [6:4]
+     * F1 415 nm   25 nm   2,32             0x01 [2:0], 0x10 [2:0]  LOW, LOW
+     * F2 445 nm   30 nm   10,25            0x05 [2:0], 0x0C [6:4]  LOW, HIGH
+     * F3 480 nm   36 nm   1,31             0x00 [6:4], 0x0F [6:4]  HIGH, HIGH
+     * F4 515 nm   39 nm   11,26            0x05 [6:4], 0x0D [2:0]  HIGH, LOW
+     * F5 555 nm   39 nm   13,19            0x06 [6:4], 0x09 [6:4]  HIGH, HIGH
+     * F6 590 nm   40 nm   8,29             0x04 [2:0], 0x0E [6:4]  LOW,  HIGH
+     * F7 630 nm   50 nm   14,20            0x07 [2:0], 0x0A [2:0]  LOW,  LOW
+     * F8 680 nm   52 nm   7,28             0x03 [6:4], 0x0E [2:0]  HIGH, LOW
+     * NIR 910 nm   n/a    38               0x13 [2:0]              LOW
+     * Clear non-filtered  17,35            0x08 [6:4], 0x11 [6:4]  HIGH, HIGH
         Write nibble either 0 or 1-6 to connect pixel to ADC
+        Note: bit 7 and 3 are reserved and must not be written.
+        Note: Max value is 6 for nibble.
+        Set F1 by setting both 0x01 [2:0] and 0x10 [2:0] to ADC0
+        * Map F1-F6 to ADC0-ADC5
+        We have to start with 0x00 which means we first conf F3 pix 1
+        * then F1 pix 2
+        0x00, (ADC_2<<4) // F3 to ADC2
+        0x01, ADC_0 // F1 to ADC0
+        0x02, SMUX_NOP
+        0x03, SMUX_NOP // no conf F8
+        0x04, ADC_5 // F6 to ADC5
+        0x05, (ADC_3<<4 | ADC_1 ) // F4 to ADC3, F2 to ADC1
+        0x06, (ADC_4<<4) // F5 to ADC4
+        0x07, SMUX_NOP
+        0x08, SMUX_NOP
+        0x09, (ADC_4<<4) // F5 to ADC4
+        0x0A, SMUX_NOP
+        0x0B, SMUX_NOP
+        0x0C, (ADC_1<<4) // F2 r to ADC1
+        0x0D, ADC_3 // F4 to ADC3
+        0x0E, (ADC_5<<4) // F6 to ADC5
+        0x0F, (ADC_2<<4) // F3 to ADC2
+        0x10, ADC_0 // F1 to ADC0
+        0x11, SMUX_NOP
+        0x12, SMUX_NOP
+        0x13, SMUX_NOP
      */
-    private boolean setSmuxLowBank() {
-        return false;
+
+    private void setF1F6SMUX() {
+        int[] smuxConfig = new int[20];
+        smuxConfig[0] = (ADC_2<<4);                 // F3
+        smuxConfig[1] = ADC_0;                      // F1
+        smuxConfig[2] = SMUX_NONE;
+        smuxConfig[3] = SMUX_NONE;
+        smuxConfig[4] = ADC_5;                      // F6
+        smuxConfig[5] = ( ADC_3<<4 | ADC_1 );       // F4 F2
+        smuxConfig[6] = ( ADC_4<<4 );               // F5
+        smuxConfig[7] = SMUX_NONE;
+        smuxConfig[8] = SMUX_NONE;
+        smuxConfig[9] = ( ADC_4<<4 );               // F5
+        smuxConfig[10] = SMUX_NONE;
+        smuxConfig[11] = SMUX_NONE;
+        smuxConfig[12] = ( ADC_1<<4 );              // F2
+        smuxConfig[13] = ADC_3;                     // F4
+        smuxConfig[14] = ( ADC_5<<4 );              // F6
+        smuxConfig[15] = ( ADC_2<<4 );              // F3
+        smuxConfig[16] = ADC_0;                     // F1
+        smuxConfig[17] = SMUX_NONE;
+        smuxConfig[18] = SMUX_NONE;
+        smuxConfig[19] = SMUX_NONE;
+        I2CBuffer smuxRAM = new I2CBuffer(20);
+        for(int i=0; i<smuxConfig.length; i++) {
+            smuxRAM.set(i, smuxConfig[i]);
+        }
+        writeSmux(smuxRAM);
     }
 
     private boolean setSmuxHighBank() {
