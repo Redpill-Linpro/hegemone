@@ -213,7 +213,21 @@ set to “1”.
         ret = set.toString();
         return ret;
     }
-
+    /* channels
+    Every pixel ID can be mapped to GND[0], or ADC 0-5[1-6]
+     * ch centr.   width   SMUX pixel id      RAM byte addr
+     * F1 415 nm   25 nm   2,32             0x01 [2:0], 0x10 [2:0]
+     * F2 445 nm   30 nm   10,25            0x05 [2:0], 0x0C [6:4]
+     * F3 480 nm   36 nm   1,31             0x00 [6:3], 0x0F [6:4]
+     * F4 515 nm   39 nm   11,26            0x05 [6:4], 0x0D [2:0]
+     * F5 555 nm   39 nm   13,19            0x06 [6:4], 0x09 [6:4]
+     * F6 590 nm   40 nm   8,29             0x04 [2:0], 0x0E [6:4]
+     * F7 630 nm   50 nm   14,20            0x07 [2:0], 0x0A [2:0]
+     * F8 680 nm   52 nm   7,28             0x03 [6:4], 0x0E [2:0]
+     * NIR 910 nm   n/a    38               0x13 [2:0]
+     * Clear non-filtered  17,35            0x08 [6:4], 0x11 [6:4]
+        Write nibble either 0 or 1-6 to connect pixel to ADC
+     */
     private boolean setSmuxLowBank() {
         return false;
     }
