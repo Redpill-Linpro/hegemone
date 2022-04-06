@@ -166,6 +166,7 @@ set to “1”.
 */
     public int[] getPhotonFlux() {
         int[] ret = {0, 0, 0, 0, 0, 0, 0, 0};
+        setF1F6SMUX();
         while(!areYouReady()) {
             Utils.suspend(400);
             System.out.println("Measurement not ready!");
