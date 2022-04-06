@@ -34,6 +34,7 @@ public class Spectrometer {
     private static final int INT_MODE_SPM = 0x0;
     private static final int SPM_ENABLE = 0x3;
     private static final int VALID_SPECTRAL = 0x40;
+    private static final int ESPECBROKE = 245;
     private static I2CBuffer oneBuf;
     private static I2CBuffer twoBuf;
     private static I2CBuffer threeBuf;
@@ -146,7 +147,8 @@ public class Spectrometer {
         try {
             register_write_byte(ENABLE_REG, POWER_OFF);
         } catch (IOException e) {
-            System.err.println("Power off failed. Goodbye");
+            System.err.println("Spectrometer power off failed. Goodbye");
+            System.exit(ESPECBROKE);
         }
     }
     /* In order to access registers from 0x60 to 0x74 bit REG_BANK in register CFG0 (0xA9) needs to be
