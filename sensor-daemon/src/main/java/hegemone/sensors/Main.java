@@ -17,6 +17,18 @@ class Main {
 	private static Logger logger = LoggerFactory.getLogger("hegemone.sensors.main");
 	/* power-on self-test */
 	public static void main(String[] args) throws Exception{
+
+		testSpectro();
+	}
+	private static void testSpectro() {
+		var sensors = new Sensors();
+		var spectrometer = sensors.getSpectralSensor();
+		spectrometer.configure();
+		spectrometer.getPhotonFlux();
+
+	}
+
+	private static void selftest() throws Exception {
 		System.out.println("Hegemone starting on " + System.getProperty("os.name") + " " + java.time.ZonedDateTime.now());
 		System.out.println("Self test");
 		/* Verify I2C */
@@ -45,9 +57,7 @@ class Main {
 					"\"spectral\": %s}", sm, st, at, wd, Arrays.toString(spectralData));
 			System.out.println(jsonData);
 		}
-
 	}
-
 	private static boolean OneWireVerify() throws Exception {
 		var bus = new File(DeviceTree.DEFAULT_W1_BUS);
 		return bus.exists() && bus.isDirectory() && bus.canRead();

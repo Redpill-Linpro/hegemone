@@ -34,9 +34,12 @@ class Sensors {
 		soilSensor = new Soil(i2cbus);
 		lightSensor = new AmbientLight(i2cbus);
 		spectralSensor = new Spectrometer(i2cbus);
-		lightSensor.configure();
+	//	lightSensor.configure();
 		spectralSensor.configure();
 	}
+	public Spectrometer getSpectralSensor() {
+			return spectralSensor;
+	};
 	public int getWhite() throws IOException {
 		return lightSensor.getWhiteLight();
 	}
