@@ -35,6 +35,14 @@ public class Spectrometer {
     private static final int SPM_ENABLE = 0x3;
     private static final int VALID_SPECTRAL = 0x40;
     private static final int ESPECBROKE = 245;
+    private static final int ADC_0 = 0b1;
+    private static final int ADC_1 = 0b10;
+    private static final int ADC_2 = 0b11;
+    private static final int ADC_3 = 0b100;
+    private static final int ADC_4 = 0b101;
+    private static final int ADC_5 = 0b110;
+    private static final int SMUX_NONE = 0x00;
+
     private static I2CBuffer oneBuf;
     private static I2CBuffer twoBuf;
     private static I2CBuffer threeBuf;
