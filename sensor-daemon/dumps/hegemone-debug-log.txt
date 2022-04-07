@@ -1,0 +1,113 @@
+# tracer: nop
+#
+# entries-in-buffer/entries-written: 102/102   #P:4
+#
+#                                _-----=> irqs-off
+#                               / _----=> need-resched
+#                              | / _---=> hardirq/softirq
+#                              || / _--=> preempt-depth
+#                              ||| /     delay
+#           TASK-PID     CPU#  ||||   TIMESTAMP  FUNCTION
+#              | |         |   ||||      |         |
+            java-1897    [000] ....  5525.524815: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [80-01] PON 
+            java-1897    [000] ....  5525.525201: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.525931: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [70-00] 0x70 00 
+            java-1897    [000] ....  5525.526319: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.526872: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [ca-4d] 0xCA 4D    ASTEP
+            java-1897    [000] ....  5525.527224: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.527603: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [cb-02] 0XCB 02    ASTEP
+            java-1897    [000] ....  5525.527953: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.528243: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [81-3c] 0x81 3C    ATIME
+            java-1897    [000] ....  5525.528587: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.528902: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [aa-03]  0xAA 03   GAIN 4x
+            java-1897    [000] ....  5525.529238: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.529408: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [70-03] 0x70 03
+            java-1897    [000] ....  5525.529739: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.529979: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [80-01] 0x80 01 PON
+            java-1897    [000] ....  5525.530320: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.530552: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [70-00]
+            java-1897    [000] ....  5525.530891: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.531117: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [ca-4d]
+            java-1897    [000] ....  5525.531471: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.531723: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [cb-02]
+            java-1897    [000] ....  5525.532068: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.532281: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [81-3c]
+            java-1897    [000] ....  5525.532626: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.532829: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [aa-03]
+            java-1897    [000] ....  5525.533177: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.533382: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [70-03]
+            java-1897    [000] ....  5525.533716: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.534057: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [80-01] disable SP_EN
+            java-1897    [000] ....  5525.534395: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.538014: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [b2-10] enable system interrupt on SMUX finish 1
+            java-1897    [000] ....  5525.538390: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.538650: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [f9-01] intenab sys interrupt (for SMUX int above) 1
+            java-1897    [000] ....  5525.538977: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.539110: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [af-10] SET SMUX CMD
+            java-1897    [000] ....  5525.539438: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.539748: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [00-30] ... begin writing smux
+            java-1897    [000] ....  5525.540076: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.540221: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [01-01]
+            java-1897    [000] ....  5525.540548: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.540674: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [02-00]
+            java-1897    [000] ....  5525.541000: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.541123: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [03-00]
+            java-1897    [000] ....  5525.541450: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.541574: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [04-06]
+            java-1897    [000] ....  5525.541900: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.542022: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [05-42]
+            java-1897    [000] ....  5525.542352: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.542475: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [06-50]
+            java-1897    [000] ....  5525.542803: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.542931: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [07-00]
+            java-1897    [000] ....  5525.543258: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.543381: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [08-00]
+            java-1897    [000] ....  5525.543708: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.543831: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [09-50]
+            java-1897    [000] ....  5525.544158: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.544280: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [0a-00]
+            java-1897    [000] ....  5525.544606: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.544730: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [0b-00]
+            java-1897    [000] ....  5525.545056: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.545179: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [0c-20]
+            java-1897    [000] ....  5525.545505: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.545632: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [0d-04]
+            java-1897    [000] ....  5525.545958: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.546300: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [0e-60]
+            java-1897    [000] ....  5525.546627: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.546769: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [0f-30]
+            java-1897    [000] ....  5525.547096: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.547222: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [10-01]
+            java-1897    [000] ....  5525.547549: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.547677: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [11-00]
+            java-1897    [000] ....  5525.548004: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.548127: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [12-00]
+            java-1897    [000] ....  5525.548453: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.548576: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [13-00]
+            java-1897    [000] ....  5525.548903: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.549022: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [80-11] EXEC SMUX
+            java-1897    [000] ....  5525.549347: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.551871: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [80-00]
+            java-1897    [000] ....  5525.552227: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.552502: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [80-01]
+            java-1897    [000] ....  5525.552831: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.552965: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [70-00]
+            java-1897    [000] ....  5525.553290: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.553412: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [ca-4d]
+            java-1897    [000] ....  5525.553738: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.553867: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [cb-02]
+            java-1897    [000] ....  5525.554194: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.554366: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [81-3c]
+            java-1897    [000] ....  5525.554692: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.554813: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [aa-03]
+            java-1897    [000] ....  5525.555140: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.555258: i2c_write: i2c-1 #0 a=039 f=0000 l=2 [70-03]
+            java-1897    [000] ....  5525.555584: i2c_result: i2c-1 n=1 ret=1
+            java-1897    [000] ....  5525.571620: i2c_write: i2c-1 #0 a=039 f=0200 l=1 [a3]
+            java-1897    [000] ....  5525.571627: i2c_read: i2c-1 #1 a=039 f=0201 l=1
+            java-1897    [000] ....  5525.572090: i2c_reply: i2c-1 #1 a=039 f=0201 l=1 [00]
+            java-1897    [000] ....  5525.572093: i2c_result: i2c-1 n=2 ret=2
+            java-1897    [000] ....  5525.573549: i2c_write: i2c-1 #0 a=039 f=0200 l=1 [a7]
+            java-1897    [000] ....  5525.573555: i2c_read: i2c-1 #1 a=039 f=0201 l=1
+            java-1897    [000] ....  5525.573999: i2c_reply: i2c-1 #1 a=039 f=0201 l=1 [00]
+            java-1897    [000] ....  5525.574002: i2c_result: i2c-1 n=2 ret=2
