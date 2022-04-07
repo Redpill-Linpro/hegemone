@@ -2,9 +2,16 @@ package hegemone.sensors;
 
 import io.helins.linux.i2c.*;
 import hegemone.sensors.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static hegemone.sensors.DeviceTree.ADAFRUIT_SPECTROMETER;
 
@@ -35,6 +42,7 @@ public class Spectrometer {
     private static final int SPM_ENABLE = 0x3;
     private static final int VALID_SPECTRAL = 0x40;
     private static final int ESPECBROKE = 245;
+    private static final int ENOREAD = 22;
     private static final int ADC_0 = 0b1;
     private static final int ADC_1 = 0b10;
     private static final int ADC_2 = 0b11;
@@ -42,12 +50,13 @@ public class Spectrometer {
     private static final int ADC_4 = 0b101;
     private static final int ADC_5 = 0b110;
     private static final int SMUX_NONE = 0x00;
-
+    private static final int CFG0_REG = 0xA9;
+    private static final int BLANK_CFG0_SET = 0x40;
     private static I2CBuffer oneBuf;
     private static I2CBuffer twoBuf;
     private static I2CBuffer threeBuf;
     private static volatile I2CBus bus;
-
+    private static Logger logger = LoggerFactory.getLogger("hegemone.sensors.spectrometer");
     static {
         try {
             oneBuf = new I2CBuffer(1);
@@ -159,27 +168,84 @@ public class Spectrometer {
             System.exit(ESPECBROKE);
         }
     }
+
+    public LinkedHashMap<String, Integer> spectralData() {
+        int[] channelValues = getPhotonFlux();
+        LinkedHashMap<String, Integer> values = new LinkedHashMap<>();
+        values.put("blue_415nm", channelValues[0]);
+        values.put("blue_445nm", channelValues[1]);
+        values.put("blue_480nm", channelValues[2]);
+        values.put("green_515nm", channelValues[3]);
+        values.put("green_555nm", channelValues[4]);
+        values.put("green_590nm", channelValues[5]);
+        values.put("red_630nm", channelValues[6]);
+        values.put("red_680nm", channelValues[7]);
+        values.put("nired_910nm", channelValues[8]);
+        values.put("clear_350nm_1000nm",channelValues[9]);
+        return values;
+    }
     /* In order to access registers from 0x60 to 0x74 bit REG_BANK in register CFG0 (0xA9) needs to be
 set to “1”.
     In SPM or SYNS mode, we should prefer reading from 0x94 to 0xA0.
     We use SPM (= spectral measurement, no ext. sync) so stick to high registers.
 */
     public int[] getPhotonFlux() {
-        int[] ret = {0, 0, 0, 0, 0, 0, 0, 0};
+        int[] ret = new int[10];
+        int[] mem_chan = { 0x95 , 0x97 , 0x99, 0x9B, 0x9D, 0x9F};
         setF1F6SMUX();
-        while(!areYouReady()) {
+        enableMeasurement();
+        while(!spectralMeasurementReady()) {
             Utils.suspend(400);
-            System.out.println("Measurement not ready!");
-            System.err.println(chipError());
         }
+        logger.trace("F1F6");
+        for(int i=0; i<mem_chan.length; i++) {
+            twoBuf.clear();
+            var currentAddress = mem_chan[i];
+            var bytes = register_read_bytes(currentAddress, twoBuf);
+            // returned data is always little endian so flip and cast to uint
+             ret[i]  = getUnsignedIntFromLittleEndianByte2(bytes);
+            logger.trace("Read A: 0x" + Integer.toHexString(currentAddress).toUpperCase()
+                                    + "->[" + Utils.byteString(bytes) +"] = " + ret[i]);
+        }
+        logger.trace("-------------");
+        setF7F8NIRCLEARSMUX();
+        enableMeasurement();
+        while(!spectralMeasurementReady()) {
+            Utils.suspend(400);
+        }
+        logger.trace("F7F8NIRCLEAR");
+        for(int i=0; i< mem_chan.length-2; i++) {
+            twoBuf.clear();
+            var currentAddress = mem_chan[i];
+            var bytes = register_read_bytes(currentAddress, twoBuf);
+            // returned data is always little endian so flip and cast to uint
+            ret[6+i]  = getUnsignedIntFromLittleEndianByte2(bytes);
+            logger.trace("Read A: 0x" + Integer.toHexString(currentAddress).toUpperCase()
+                    + "->[" + Utils.byteString(bytes) +"] = " + ret[6+i]);
+        }
+        logger.trace("-------------");
         return ret;
     }
-    private boolean areYouReady() {
-        var avalid = register_read_bytes(STATUS2_REG, oneBuf)[0];
+
+
+
+    private boolean spectralMeasurementReady() {
+        oneBuf.clear();
+        var avalid = (register_read_bytes(STATUS2_REG, oneBuf))[0];
         return (avalid == VALID_SPECTRAL);
     }
-
-    public boolean measurementReady() {
+    private static int getUnsignedIntFromLittleEndianByte2(byte[] arr) {
+            return (0xFF & arr[1]) <<8 | (0xFF & arr[0]);
+    }
+    public void enableMeasurement() {
+        try {
+            register_write_byte(ENABLE_REG, SPM_ENABLE);
+        }
+        catch (IOException e) {
+            System.err.println("Couldn't enable spectral measurement");
+        }
+    }
+    public boolean advancedStatus() {
         var ret = false;
         synchronized (bus) {
             var response = register_read_bytes(STATUS_READY_REG, oneBuf);
@@ -292,7 +358,40 @@ set to “1”.
         }
         writeSmux(smuxRAM);
     }
-
+    /*
+     * F7 630 nm   50 nm   14,20            0x07 [2:0], 0x0A [2:0]  LOW,  LOW
+     * F8 680 nm   52 nm   7,28             0x03 [6:4], 0x0E [2:0]  HIGH, LOW
+     * NIR 910 nm   n/a    38               0x13 [2:0]              LOW
+     * Clear non-filtered  17,35            0x08 [6:4], 0x11 [6:4]  HIGH, HIGH
+     */
+    private void setF7F8NIRCLEARSMUX() {
+        int[] smuxConfig = new int[20];
+        smuxConfig[0] = SMUX_NONE;
+        smuxConfig[1] = SMUX_NONE;
+        smuxConfig[2] = SMUX_NONE;
+        smuxConfig[3] = (ADC_1<<4);     // F8 to ADC1
+        smuxConfig[4] = SMUX_NONE;
+        smuxConfig[5] = SMUX_NONE;
+        smuxConfig[6] = SMUX_NONE;
+        smuxConfig[7] = ADC_0;          // F7 to ADC0
+        smuxConfig[8] = (ADC_3<<4);     // Clear to ADC3
+        smuxConfig[9] = SMUX_NONE;
+        smuxConfig[10] = ADC_0;         // F7 to ADC0
+        smuxConfig[11] = SMUX_NONE;
+        smuxConfig[12] = SMUX_NONE;
+        smuxConfig[13] = SMUX_NONE;
+        smuxConfig[14] = ADC_1;         // F8 to ADC1
+        smuxConfig[15] = SMUX_NONE;
+        smuxConfig[16] = SMUX_NONE;
+        smuxConfig[17] = (ADC_3<<4);    // Clear to ADC3
+        smuxConfig[18] = SMUX_NONE;
+        smuxConfig[19] = ADC_2; // NIR to ADC2
+        I2CBuffer smuxRAM = new I2CBuffer(20);
+        for(int i=0; i<smuxConfig.length; i++) {
+            smuxRAM.set(i, smuxConfig[i]);
+        }
+        writeSmux(smuxRAM);
+    }
     private boolean setSmuxHighBank() {
         return false;
     }
@@ -312,16 +411,17 @@ set to “1”.
         try {
             bus.selectSlave(ADAFRUIT_SPECTROMETER);
             register_write_byte(ENABLE_REG, POWER_ON);
-            register_write_byte(CFG9_REG, SINT_SMUX_ENABLE);
-            register_write_byte(INTENAB_REG, SIEN_ENABLE);
+        //    register_write_byte(CFG9_REG, SINT_SMUX_ENABLE);
+        //    register_write_byte(INTENAB_REG, SIEN_ENABLE);
             register_write_byte(CFG6_REG, WRITE_SMUX_CONF);
             for (int i = 0; i < memoryBytes.length; i++) {
                 var b = memoryBytes.get(i);
                 register_write_byte(i, b);
             }
+            register_write_byte(CFG0_REG, BLANK_CFG0_SET);
             register_write_byte(ENABLE_REG, START_SMUXEN_PON);
             Utils.suspend(500); /* should poll for interrupt flag */
-            register_write_byte(ENABLE_REG, POWER_OFF);
+            register_write_byte(ENABLE_REG, POWER_ON);
         } catch (IOException e) {
             System.err.println("Failed to write SMUX configuration to spectrometer.");
         }

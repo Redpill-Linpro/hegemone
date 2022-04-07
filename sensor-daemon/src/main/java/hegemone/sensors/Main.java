@@ -24,8 +24,10 @@ class Main {
 		var sensors = new Sensors();
 		var spectrometer = sensors.getSpectralSensor();
 		spectrometer.configure();
-		spectrometer.getPhotonFlux();
-
+		while(true) {
+			System.out.println(spectrometer.spectralData());
+			Utils.suspend(300);
+		}
 	}
 
 	private static void selftest() throws Exception {
