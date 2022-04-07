@@ -1,6 +1,11 @@
 package hegemone.sensors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import io.helins.linux.i2c.*;
+
+import java.util.Map;
 import java.util.logging.*;
 import java.io.IOException;
 import hegemone.sensors.DeviceTree;
@@ -40,10 +45,10 @@ class Sensors {
 	public Spectrometer getSpectralSensor() {
 			return spectralSensor;
 	};
-	public int getWhite() throws IOException {
+	public int getWhite() {
 		return lightSensor.getWhiteLight();
 	}
-	public double getTemperature() throws IOException, FileNotFoundException {
+	public double getTemperature() {
 		double ret = 0;
 		try {
 			var sensor = new File(DeviceTree.DEFAULT_W1_BUS, DeviceTree.DS18B20_SENSOR);
@@ -65,7 +70,7 @@ class Sensors {
 				}
 				ret = Integer.parseInt(s.substring(i + 2)) / 1000f;
 			}
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			System.err.println("Could not access DS18B20 temperature sensor.");
 		}
 		return ret;
@@ -78,6 +83,19 @@ class Sensors {
 		return soilSensor.getTemperature();
 	}
 
+	public String sensorsToJSON() {
+		var spectralData = spectralSensor.spectralData();
+		var resultMap = Map.of(
+				"moisture", getSoilMoisture(),
+				"soil_temp", getSoilTemperature(),
+				"ambient_temp", getTemperature(),
+				"spectral_data", spectralData,
+				"lux", getWhite(),
+				"rlqi", spectralSensor.getRLQI(spectralData)
+		);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		return gson.toJson(resultMap);
+	}
 	public int[] getSpectralMeasurement() {
 		return spectralSensor.getPhotonFlux();
 	}

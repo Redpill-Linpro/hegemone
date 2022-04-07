@@ -25,7 +25,7 @@ class Main {
 		var spectrometer = sensors.getSpectralSensor();
 		spectrometer.configure();
 		while(true) {
-			System.out.println(spectrometer.spectralData());
+			System.out.println(sensors.sensorsToJSON());
 			Utils.suspend(300);
 		}
 	}

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static hegemone.sensors.DeviceTree.ADAFRUIT_SPECTROMETER;
 
@@ -169,6 +170,23 @@ public class Spectrometer {
         }
     }
 
+    public Map<String, Integer> getRLQI(Map<String, Integer> spectralData) {
+
+        var blue = spectralData.entrySet()
+                .stream()
+                .filter(k -> k.getKey().contains("blue"))
+                .mapToInt(o -> o.getValue()).sum();
+        var green =  spectralData.entrySet()
+                .stream()
+                .filter(k -> k.getKey().contains("green"))
+                .mapToInt(o -> o.getValue()).sum();
+        var red =  spectralData.entrySet()
+                .stream()
+                .filter(k -> k.getKey().contains("red"))
+                .mapToInt(o -> o.getValue()).sum();
+        var total = blue+green+red;
+        return Map.of("blue", blue*100/total, "green", green*100/total, "red", red*100/total);
+    }
     public LinkedHashMap<String, Integer> spectralData() {
         int[] channelValues = getPhotonFlux();
         LinkedHashMap<String, Integer> values = new LinkedHashMap<>();
