@@ -206,6 +206,7 @@ public class Spectrometer {
 set to “1”.
     In SPM or SYNS mode, we should prefer reading from 0x94 to 0xA0.
     We use SPM (= spectral measurement, no ext. sync) so stick to high registers.
+    Returned data is always little endian so flip bytes and cast to uint(!)
 */
     public int[] getPhotonFlux() {
         int[] ret = new int[10];
@@ -220,7 +221,6 @@ set to “1”.
             twoBuf.clear();
             var currentAddress = mem_chan[i];
             var bytes = register_read_bytes(currentAddress, twoBuf);
-            // returned data is always little endian so flip and cast to uint
              ret[i]  = getUnsignedIntFromLittleEndianByte2(bytes);
             logger.trace("Read A: 0x" + Integer.toHexString(currentAddress).toUpperCase()
                                     + "->[" + Utils.byteString(bytes) +"] = " + ret[i]);
@@ -236,7 +236,6 @@ set to “1”.
             twoBuf.clear();
             var currentAddress = mem_chan[i];
             var bytes = register_read_bytes(currentAddress, twoBuf);
-            // returned data is always little endian so flip and cast to uint
             ret[6+i]  = getUnsignedIntFromLittleEndianByte2(bytes);
             logger.trace("Read A: 0x" + Integer.toHexString(currentAddress).toUpperCase()
                     + "->[" + Utils.byteString(bytes) +"] = " + ret[6+i]);
@@ -263,6 +262,7 @@ set to “1”.
             System.err.println("Couldn't enable spectral measurement");
         }
     }
+    //TODO: Figure out how to use this reliably...
     public boolean advancedStatus() {
         var ret = false;
         synchronized (bus) {
@@ -403,7 +403,7 @@ set to “1”.
         smuxConfig[16] = SMUX_NONE;
         smuxConfig[17] = (ADC_3<<4);    // Clear to ADC3
         smuxConfig[18] = SMUX_NONE;
-        smuxConfig[19] = ADC_2; // NIR to ADC2
+        smuxConfig[19] = ADC_2;         // NIR to ADC2
         I2CBuffer smuxRAM = new I2CBuffer(20);
         for(int i=0; i<smuxConfig.length; i++) {
             smuxRAM.set(i, smuxConfig[i]);
@@ -414,11 +414,13 @@ set to “1”.
         return false;
     }
 
-    /* write 20 bytes to SMUX */
+    /* write 20 bytes to SMUX
+    * TODO: figure out why setting interrupts isn't working
+    * */
     private void writeSmux(I2CBuffer memoryBytes) {
         /* power on b0 1 in ENABLE_REG
-         *  enable SINT_SMUX in CFG9
-         *  enable SIEN in INTENAB
+         *  enable SINT_SMUX in CFG9 ; nope! apparently something breaks
+         *  enable SIEN in INTENAB   ; nope! apparently something breaks
          *  write SMUX CFG cmd in CFG6
          *  0x00,0x01,0x02,0x03,0x04
          *  0x04,0x05,0x06,0x07...*/
@@ -438,7 +440,7 @@ set to “1”.
             }
             register_write_byte(CFG0_REG, BLANK_CFG0_SET);
             register_write_byte(ENABLE_REG, START_SMUXEN_PON);
-            Utils.suspend(500); /* should poll for interrupt flag */
+            Utils.suspend(500); /* TODO: should poll for interrupt flag */
             register_write_byte(ENABLE_REG, POWER_ON);
         } catch (IOException e) {
             System.err.println("Failed to write SMUX configuration to spectrometer.");
